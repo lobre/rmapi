@@ -13,11 +13,14 @@ import (
 	"strings"
 
 	"github.com/juruen/rmapi/encoding/rm"
+	"github.com/pkg/profile"
 )
 
 // Read fills a Zip parsing a Remarkable archive file.
-func (z *Zip) Read(r io.Reader) error {
-	zr, err := zipReaderFromIOReader(r)
+func (z *Zip) Read(r io.ReaderAt, size int64) error {
+	defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
+
+	zr, err := zip.NewReader(r, size)
 	if err != nil {
 		return err
 	}
